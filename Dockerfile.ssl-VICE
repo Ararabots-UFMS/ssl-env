@@ -1,0 +1,91 @@
+#iinstall ros package
+# This is an auto generated Dockerfile for ros:ros-base
+# generated from docker_images_ros2/create_ros_image.Dockerfile.em
+FROM ros:humble-ros-base-jammy
+
+# install bootstrap tools
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    build-essential \
+    git \
+    python3-colcon-common-extensions \
+    python3-colcon-mixin \
+    python3-rosdep \
+    python3-vcstool \
+    && rm -rf /var/lib/apt/lists/*
+
+# install ros2 packages
+RUN apt-get update && apt-get install -y --install-recommends ros-dev-tools && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \        
+     apt-get install -y git
+
+
+#RUN ["chmod", "+x", "/opt/ros/humble/setup.sh"]
+
+#RUN /opt/ros/humble/setup.sh
+
+RUN cd home && git clone https://github.com/Ararabots-UFMS/ssl-VICE.git
+
+RUN cd /home/ssl-VICE && . /opt/ros/$ROS_DISTRO/setup.sh && colcon build
+
+RUN echo 'source /home/ssl-VICE/install/local_setup.sh' >> ~/.bashrc
+
+# Instalar o pip para Python 3
+RUN apt-get update && apt-get install -y --no-install-recommends python3-pip && rm -rf /var/lib/apt/lists/*
+
+# Atualizar ferramentas de build do Python
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+# Instalar dependências adicionais
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cmake \
+    build-essential \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Atualizar o pacote blinker
+#RUN python3 -m pip install --upgrade blinker
+
+# Instalar dependências do VS Code
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libatspi2.0-0 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libxkbfile1 \
+    libxrandr2 \
+    xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Baixar e instalar o VS Code
+RUN wget "https://go.microsoft.com/fwlink/?LinkID=760868" -O vscode.deb && \
+    dpkg -i vscode.deb && \
+    rm -f vscode.deb
+
+RUN wget "https://go.microsoft.com/fwlink/?LinkID=760868" -O vscode.deb && \
+    dpkg -i vscode.deb && \
+    rm -f vscode.deb
+
+# Instalar pacotes do requirements.txt
+RUN cd /home/ssl-VICE && python3 -m pip install --ignore-installed -r requirements.txt
+
+
+#RUN cd /home/ssl-VICE/ && colcon build
+
+RUN echo 'export ARARA_VICE_PATH = path/to/repo' >> ~/.bashrc
+
+RUN rm -rf /var/lib/apt/lists/*
+
+#Use flags como --no-install-recommends com apt-get ou --no-cache com apk add para evitar a instalação de pacotes recomendados ou opcionais que podem não ser estritamente necessários. 
+
+WORKDIR /ssl-VICE
+
+CMD ["code", "--no-sandbox", "--user-data-dir=/root/.vscode","."]
