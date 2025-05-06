@@ -1,21 +1,21 @@
 services:
   game-controller:
-    image:
-      - "robocupssl/ssl-game-controller"
+    image: "robocupssl/ssl-game-controller"
     ports:
       - "8081:8081"
   grSim:
-    image:
-      - "robocupssl/grsim:latest"
+    image: "robocupssl/grsim:latest"
     ports:
       - "5000:3000"
   ssl-VICE:
-    image:
-      - ""
+    image: "ssl-gui"
     ports:
-      - ""
+      - "8080:80"
   ssl-vision:
-    image:
-      - ""
+    image: "ssl-vice"
     ports:
-      - ""
+      - "3306:3306"
+  ssl-gui:
+    image: "ssl-vision"
+    ports:
+      - "80:8080"

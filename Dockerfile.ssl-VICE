@@ -1,4 +1,4 @@
-#iinstall ros package
+#install ros package
 # This is an auto generated Dockerfile for ros:ros-base
 # generated from docker_images_ros2/create_ros_image.Dockerfile.em
 FROM ros:humble-ros-base-jammy
@@ -65,15 +65,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Baixar e instalar o VS Code
-RUN wget "https://go.microsoft.com/fwlink/?LinkID=760868" -O vscode.deb && \
-    dpkg -i vscode.deb && \
-    rm -f vscode.deb
-
-RUN wget "https://go.microsoft.com/fwlink/?LinkID=760868" -O vscode.deb && \
-    dpkg -i vscode.deb && \
-    rm -f vscode.deb
-
 # Instalar pacotes do requirements.txt
 RUN cd /home/ssl-VICE && python3 -m pip install --ignore-installed -r requirements.txt
 
@@ -87,5 +78,3 @@ RUN rm -rf /var/lib/apt/lists/*
 #Use flags como --no-install-recommends com apt-get ou --no-cache com apk add para evitar a instalação de pacotes recomendados ou opcionais que podem não ser estritamente necessários. 
 
 WORKDIR /ssl-VICE
-
-CMD ["code", "--no-sandbox", "--user-data-dir=/root/.vscode","."]
