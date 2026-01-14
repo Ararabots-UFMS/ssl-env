@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  ssl-vision:
+    build: .
+    image: ssl-vision:local
+    container_name: ssl-vision
+    network_mode: "host"
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - MESA_LOADER_DRIVER_OVERRIDE=iris
+      - LIBGL_ALWAYS_SOFTWARE=0
+    devices:
+      - "/dev/video0:/dev/video0"
+      - "/dev/dri:/dev/dri"
+    volumes:
+      - ./test-data:/opt/ssl-vision/test-data
+      - ./config:/opt/ssl-vision/config
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    group_add:
+      - video
+    privileged: true
+    user: "0:0"
