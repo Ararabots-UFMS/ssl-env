@@ -24,7 +24,7 @@ docker-compose up --build
 ### 6. Para rodar depois de ter feito o build, rode apenas:
 
 ```
-xhost +locak:docker
+xhost +local:docker
 docker-compose up
 ```
 
