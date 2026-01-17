@@ -12,6 +12,9 @@ services:
       - LIBGL_ALWAYS_SOFTWARE=0
     devices:
       - "/dev/video0:/dev/video0"
+      - "/dev/video1:/dev/video1"
+      - "/dev/video2:/dev/video2"
+      - "/dev/video3:/dev/video3"
       - "/dev/dri:/dev/dri"
     volumes:
       - ./test-data:/opt/ssl-vision/test-data
