@@ -27,11 +27,10 @@ docker-compose up --build
 xhost +local:docker
 docker-compose up
 ```
-*Observação: não conecte mais nenhum dispositivo de camera usb além da camera utilizada para o vision pois, no docker-compose está configurado para apenas dois dispositivos de video, um para uma webcam integrada (se tiver no caso de notebooks) e um para câmera normal usb. Se houver a necessidade de adicionar mais câmeras ao vision, basta adicionar mais dispositivos de video ao docker-compose com:
+*Observação: não conecte mais nenhum dispositivo de camera usb além da camera utilizada para o vision pois, no docker-compose está configurado para apenas dois dispositivos de video, um para uma webcam integrada (se tiver no caso de notebooks) e um para câmera normal usb. Se houver a necessidade de adicionar mais câmeras ao vision, basta adicionar mais dispositivos de video ao docker-compose com:*
 ```
 "/dev/video*:/dev/video*"
 ```
-*
 
 ## Para buildar as imagens use:
 - sh build.sh
