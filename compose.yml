@@ -1,21 +1,63 @@
 services:
   game-controller:
     image: "robocupssl/ssl-game-controller"
-    ports:
-      - "8081:8081"
+    network_mode: "host"
+    # ports:
+    #   - "8081:8081"
   grSim:
     image: "robocupssl/grsim:latest"
-    ports:
-      - "5000:3000"
-  ssl-VICE:
-    image: "ssl-gui"
-    ports:
-      - "8080:80"
+    network_mode: "host"
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - LIBGL_ALWAYS_INDIRECT=0
+    command: ["grSim"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # ports:
+    #   - "5000:3000"
+  ssl-vice:
+    build:
+      context: ./docker/vice
+    network_mode: "host"
+    # ports:
+    #   - "8080:80"
+    depends_on:
+      - grSim
+      - game-controller
+      - ssl-vision
   ssl-vision:
-    image: "ssl-vice"
-    ports:
-      - "3306:3306"
+    build:
+      context: ./docker/vision
+    network_mode: "host"
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - MESA_LOADER_DRIVER_OVERRIDE=iris
+      - LIBGL_ALWAYS_SOFTWARE=0
+    devices:
+      # - "/dev/video0:/dev/video0" # Descomente se for ligar câmeras reais na máquina
+      - "/dev/dri:/dev/dri"
+    volumes:
+      # - ./test-data:/opt/ssl-vision/test-data  # Recomendo criar essas pastas na raiz do seu projeto se for usá-las
+      # - ./config:/opt/ssl-vision/config
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      # Descomente abaixo se for carregar arquivos de calibração locais (Crie as pastas antes!)
+      # - ./test-data:/opt/ssl-vision/test-data  
+      # - ./config:/opt/ssl-vision/config
+    group_add:
+      - video
+    privileged: true
+    user: "0:0"
+    # ports:
+    #   - "3306:3306"
   ssl-gui:
-    image: "ssl-vision"
+    build:
+      context: ./docker/gui
     ports:
       - "80:8080"
