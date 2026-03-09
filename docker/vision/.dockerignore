@@ -1,0 +1,6 @@
+build/
+.git/
+.gitignore
+*.md
+docker-compose.yml
+vision

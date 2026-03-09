@@ -1,0 +1,49 @@
+#!/bin/bash
+set -e
+
+# Resolve o caminho do script, mesmo se for um link simbólico
+if [[ -L "${BASH_SOURCE[0]}" ]]; then
+    SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+else
+    SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+fi
+
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+INSTALL_DIR="$HOME/.local/bin"
+
+# Auto-instala o comando 'vision' se não estiver presente
+if [[ ! -f "$INSTALL_DIR/vision" ]]; then
+    echo ":: Installing 'vision' command to $INSTALL_DIR..."
+    mkdir -p "$INSTALL_DIR"
+    ln -sf "$SCRIPT_PATH" "$INSTALL_DIR/vision"
+    echo "✓ Symlink created"
+fi
+
+# Checa se e o seu PATH inclui o diretório de instalação
+if [[ ! ":$PATH:" == *":$INSTALL_DIR:"* ]]; then
+    echo ""
+    echo "⚠ $INSTALL_DIR não tem um diretório no PATH. Adicione-o para usar o comando 'vision' globalmente."
+    echo ""
+    echo "Rode isso para adiciona-lo:"
+    echo "  echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.bashrc"
+    echo "  source ~/.bashrc"
+    echo ""
+fi
+
+# Habilita o acesso ao X11 para o Docker
+xhost +local:docker > /dev/null 2>&1
+cd "$SCRIPT_DIR"
+
+# Builda imagem Docker se ela não existir, caso contrário, apenas sobe os containers
+if [[ "$(docker images -q ssl-vision:local 2> /dev/null)" == "" ]]; then
+    echo ":: Building ssl-vision image..."
+    # Limpa o diretório de build local para evitar conflitos
+    if [[ -d "build" ]]; then
+        echo ":: Cleaning local build directory..."
+        rm -rf build
+    fi
+    docker-compose up --build
+else
+    docker-compose up
+fi
+
