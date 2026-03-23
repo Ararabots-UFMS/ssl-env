@@ -11,7 +11,7 @@ app.include_router(router_logs, prefix="/api/logs")
 app.include_router(router_env_setup, prefix="/api/env-setup")
 
 class ServidorOrquestrador:
-    def __init__(self, host="127.0.0.1", porta=8080):
+    def __init__(self, host="0.0.0.0", porta=8080):
         self.host = host
         self.porta = porta
     

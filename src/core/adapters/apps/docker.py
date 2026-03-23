@@ -6,18 +6,16 @@ import sys
 import ctypes
 import time
 
-AMBIENTES_CONFIG = {
-    "ssl_dev": ["ssl-gui", "vision", "grSim", "ssl-vice", "game-controller"],
-    "ssl_prod": ["ssl-db-prod", "ssl-api-prod", "ssl-proxy"],
-    "lugobots_dev": ["lugo-core", "lugo-simulator"],
-    "eletronica_dev": ["eletronica-worker", "eletronica-db"]
-}
-
-def check_docker():
+def check_docker(os_name):
     try:
         subprocess.run(["docker", "info"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
+        print("Docker não está instalado ou não está funcionando.")
+        if os_name == "Windows":
+            print("Abra o docker desktop para o correto funcionamento")
+        elif os_name == "Linux":
+            print("Verifique se o daemon do Docker está ativo (systemctl status docker).")
         return False
     
 def iniciar_container(nome_do_container: str):
